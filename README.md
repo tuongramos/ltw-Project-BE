@@ -1,7 +1,7 @@
 # Backend API cho Web Bán Đồ Thể Thao (Advanced MVC)
 
-Cấu trúc MVC với Repository Pattern theo tiêu chuẩn dự án thực tế.
+Cấu trúc MVC với Repository Pattern.
 
 ## Thư mục chạy chính:
-- Bạn chỉ cần trỏ domain/server vào thư mục \`public/\`.
+- Trỏ domain/server vào thư mục \`public/\`.
 - Nếu dùng localhost, endpoint ví dụ: \`http://localhost/ltw_BE/public/api/products\`
