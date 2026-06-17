@@ -1,7 +1,7 @@
 <?php
 // Ví dụ các đường dẫn (Routes)
 $router->add('GET', '/', function() {
-    echo json_encode(["message" => "Chào mừng bạn đến với Advanced MVC API Backend!"]);
+    echo json_encode(["message" => "Chào mừng bạn đến với Advanced MVC API Backend!"], JSON_UNESCAPED_UNICODE);
 });
 
 // ==========================================
