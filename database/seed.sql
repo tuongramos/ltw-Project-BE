@@ -36,3 +36,13 @@ INSERT INTO products (category_id, name, brand, description, price, sale_price, 
 
 -- Phụ Kiện (category_id = 5)
 (5, 'Cước Cầu Lông BG65', 'YONEX', 'Cước đánh phổ biến nhất thế giới, bền, đàn hồi tốt. Đường kính 0.70mm.', 85000, NULL, 0, 'https://via.placeholder.com/300x300?text=Cuoc+BG65', 200, 1);
+
+//taikhoanmau//
+INSERT INTO accounts(username,email,password,role)
+VALUES
+(
+    'admin',
+    'admin@gmail.com',
+    '$2y$10$abcdefghijklmnopqrstuv',
+    'ADMIN'
+);
