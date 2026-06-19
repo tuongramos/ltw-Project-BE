@@ -10,5 +10,8 @@ class AccountService {
     public function getAll() {
         return $this->repository->findAll();
     }
+    public function getById($id) {
+    return $this->repository->findById($id);
+    }
 }
 ?>

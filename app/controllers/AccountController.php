@@ -12,8 +12,10 @@ class AccountController extends BaseController {
     }
 
     public function show($id) {
-        // TODO: Xử lý request GET lấy 1 phần tử theo ID
-        $this->jsonResponse(['message' => "Lấy thông tin Account ID $id thành công"]);
+
+    $account = $this->service->getById($id);
+
+    $this->jsonResponse($account);
     }
 
     public function store() {
