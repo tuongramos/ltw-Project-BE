@@ -18,5 +18,18 @@ class AccountRepository {
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
     }  
-        }
+    public function create($username, $email, $password, $role) {
+    $stmt = $this->db->prepare(
+        "INSERT INTO accounts(username, email, password, role)
+         VALUES (?, ?, ?, ?)"
+    );
+
+    return $stmt->execute([
+        $username,
+        $email,
+        $password,
+        $role
+    ]);
+    }
+}
 ?>

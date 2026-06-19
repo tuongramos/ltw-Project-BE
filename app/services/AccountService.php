@@ -13,5 +13,13 @@ class AccountService {
     public function getById($id) {
     return $this->repository->findById($id);
     }
+    public function create($data) {
+    return $this->repository->create(
+        $data['username'],
+        $data['email'],
+        $data['password'],
+        $data['role'] ?? 'USER'
+    );
+    }
 }
 ?>

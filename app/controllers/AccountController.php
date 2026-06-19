@@ -19,8 +19,20 @@ class AccountController extends BaseController {
     }
 
     public function store() {
-        // TODO: Xử lý request POST thêm mới
-        $this->jsonResponse(['message' => 'Thêm mới Account thành công'], 201);
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $result = $this->service->create($data);
+
+    if ($result) {
+        $this->jsonResponse([
+            'message' => 'Tạo tài khoản thành công'
+        ], 201);
+    } else {
+        $this->jsonResponse([
+            'message' => 'Tạo tài khoản thất bại'
+        ], 400);
+    }
     }
 
     public function update($id) {
