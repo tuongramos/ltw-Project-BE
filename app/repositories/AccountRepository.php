@@ -1,5 +1,6 @@
 <?php
 class AccountRepository {
+
     private $db;
 
     public function __construct() {
@@ -7,7 +8,10 @@ class AccountRepository {
         $this->db = $database->getConnection();
     }
 
-    // TODO: Viết các hàm chứa câu lệnh SQL (SELECT, INSERT, UPDATE, DELETE)
-    // Ví dụ: public function findAll() { ... }
+    public function findAll() {
+        $stmt = $this->db->prepare("SELECT * FROM accounts");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

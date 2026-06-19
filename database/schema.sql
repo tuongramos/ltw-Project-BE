@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS products (
 
 
 
-//Bảng Tài Khoản (accounts)//
+-- =============================================
+-- Bảng Tài Khoản (accounts)
+-- Dùng cho đăng ký, đăng nhập và phân quyền
+-- =============================================
 
 CREATE TABLE IF NOT EXISTS accounts (
     id INT AUTO_INCREMENT PRIMARY KEY,

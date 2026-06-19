@@ -7,8 +7,8 @@ class AccountController extends BaseController {
     }
 
     public function index() {
-        // TODO: Xử lý request GET lấy danh sách
-        $this->jsonResponse(['message' => 'Lấy danh sách Account thành công']);
+        $accounts = $this->service->getAll();
+        $this->jsonResponse($accounts);
     }
 
     public function show($id) {
