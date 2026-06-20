@@ -1,5 +1,11 @@
 <?php
 class Payment {
-    // TODO: Khai báo các thuộc tính (public/private properties) của bảng Payment
+    public $id;
+    public $order_id;
+    public $method;     // COD | BANKING | MOMO | ZALOPAY
+    public $amount;
+    public $status;     // PENDING | COMPLETED | FAILED | REFUNDED
+    public $transaction_id;
+    public $created_at;
 }
 ?>

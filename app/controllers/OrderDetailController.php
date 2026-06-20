@@ -7,28 +7,45 @@ class OrderDetailController extends BaseController {
     }
 
     public function index() {
-        // TODO: Xử lý request GET lấy danh sách
-        $this->jsonResponse(['message' => 'Lấy danh sách OrderDetail thành công']);
+        $details = $this->service->getAll();
+        $result = array_map(function($d) {
+            return OrderDetailMapper::toDTO($d);
+        }, $details);
+        $this->jsonResponse($result);
     }
 
     public function show($id) {
-        // TODO: Xử lý request GET lấy 1 phần tử theo ID
-        $this->jsonResponse(['message' => "Lấy thông tin OrderDetail ID $id thành công"]);
+        $detail = $this->service->getById($id);
+        if (!$detail) {
+            $this->jsonResponse(['message' => 'Không tìm thấy chi tiết đơn hàng'], 404);
+        }
+        $this->jsonResponse(OrderDetailMapper::toDTO($detail));
     }
 
     public function store() {
-        // TODO: Xử lý request POST thêm mới
-        $this->jsonResponse(['message' => 'Thêm mới OrderDetail thành công'], 201);
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data || empty($data['order_id']) || empty($data['product_id']) || empty($data['quantity']) || empty($data['unit_price'])) {
+            $this->jsonResponse(['message' => 'Thiếu thông tin bắt buộc'], 400);
+        }
+        $detail = $this->service->create($data);
+        $this->jsonResponse(OrderDetailMapper::toDTO($detail), 201);
     }
 
     public function update($id) {
-        // TODO: Xử lý request PUT cập nhật
-        $this->jsonResponse(['message' => "Cập nhật OrderDetail ID $id thành công"]);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $detail = $this->service->update($id, $data);
+        if (!$detail) {
+            $this->jsonResponse(['message' => 'Không tìm thấy chi tiết đơn hàng'], 404);
+        }
+        $this->jsonResponse(OrderDetailMapper::toDTO($detail));
     }
 
     public function destroy($id) {
-        // TODO: Xử lý request DELETE xóa
-        $this->jsonResponse(['message' => "Xóa OrderDetail ID $id thành công"]);
+        $result = $this->service->delete($id);
+        if (!$result) {
+            $this->jsonResponse(['message' => 'Không tìm thấy chi tiết đơn hàng'], 404);
+        }
+        $this->jsonResponse(['message' => "Xóa chi tiết đơn hàng ID $id thành công"]);
     }
 }
 ?>
