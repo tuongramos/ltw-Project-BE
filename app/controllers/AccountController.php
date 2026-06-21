@@ -41,8 +41,18 @@ class AccountController extends BaseController {
     }
 
     public function destroy($id) {
-        // TODO: Xử lý request DELETE xóa
-        $this->jsonResponse(['message' => "Xóa Account ID $id thành công"]);
+
+    $result = $this->service->delete($id);
+
+    if ($result) {
+        $this->jsonResponse([
+            'message' => "Xóa Account ID $id thành công"
+        ]);
+    } else {
+        $this->jsonResponse([
+            'message' => "Xóa thất bại"
+        ], 400);
     }
+}
 }
 ?>

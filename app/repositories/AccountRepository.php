@@ -13,23 +13,30 @@ class AccountRepository {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function findById($id) {
-    $stmt = $this->db->prepare("SELECT * FROM accounts WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-    }  
-    public function create($username, $email, $password, $role) {
-    $stmt = $this->db->prepare(
-        "INSERT INTO accounts(username, email, password, role)
-         VALUES (?, ?, ?, ?)"
-    );
 
-    return $stmt->execute([
-        $username,
-        $email,
-        $password,
-        $role
-    ]);
+    public function findById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM accounts WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function create($username, $email, $password, $role) {
+        $stmt = $this->db->prepare(
+            "INSERT INTO accounts(username, email, password, role)
+             VALUES (?, ?, ?, ?)"
+        );
+
+        return $stmt->execute([
+            $username,
+            $email,
+            $password,
+            $role
+        ]);
+    }
+
+    public function delete($id) {
+        $stmt = $this->db->prepare("DELETE FROM accounts WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 }
 ?>

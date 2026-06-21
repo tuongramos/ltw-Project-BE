@@ -21,5 +21,8 @@ class AccountService {
         $data['role'] ?? 'USER'
     );
     }
+    public function delete($id) {
+    return $this->repository->delete($id);
+    }
 }
 ?>
