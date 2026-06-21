@@ -24,5 +24,15 @@ class AccountService {
     public function delete($id) {
     return $this->repository->delete($id);
     }
+    public function update($id, $data) {
+
+    return $this->repository->update(
+        $id,
+        $data['username'],
+        $data['email'],
+        $data['password'],
+        $data['role']
+    );
+}
 }
 ?>

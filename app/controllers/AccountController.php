@@ -32,12 +32,24 @@ class AccountController extends BaseController {
         $this->jsonResponse([
             'message' => 'Tạo tài khoản thất bại'
         ], 400);
-    }
+        }
     }
 
     public function update($id) {
-        // TODO: Xử lý request PUT cập nhật
-        $this->jsonResponse(['message' => "Cập nhật Account ID $id thành công"]);
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $result = $this->service->update($id, $data);
+
+    if ($result) {
+        $this->jsonResponse([
+            'message' => "Cập nhật Account ID $id thành công"
+        ]);
+    } else {
+        $this->jsonResponse([
+            'message' => "Cập nhật thất bại"
+        ], 400);
+        }
     }
 
     public function destroy($id) {

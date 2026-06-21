@@ -38,5 +38,21 @@ class AccountRepository {
         $stmt = $this->db->prepare("DELETE FROM accounts WHERE id = ?");
         return $stmt->execute([$id]);
     }
+    public function update($id, $username, $email, $password, $role) {
+
+    $stmt = $this->db->prepare(
+        "UPDATE accounts
+         SET username = ?, email = ?, password = ?, role = ?
+         WHERE id = ?"
+    );
+
+    return $stmt->execute([
+        $username,
+        $email,
+        $password,
+        $role,
+        $id
+    ]);
+}
 }
 ?>
