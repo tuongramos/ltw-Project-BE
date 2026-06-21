@@ -1,5 +1,12 @@
 <?php
 class OrderDetailDTO {
-    // TODO: Chứa các thuộc tính cần trả về cho Frontend (ẩn đi password, data thừa...)
+    public $id;
+    public $order_id;
+    public $product_id;
+    public $product_name;
+    public $product_image;
+    public $quantity;
+    public $unit_price;
+    public $subtotal;
 }
 ?>

@@ -1,5 +1,12 @@
 <?php
 class OrderDetail {
-    // TODO: Khai báo các thuộc tính (public/private properties) của bảng OrderDetail
+    public $id;
+    public $order_id;
+    public $product_id;
+    public $product_name;
+    public $product_image;
+    public $quantity;
+    public $unit_price;
+    public $subtotal;
 }
 ?>

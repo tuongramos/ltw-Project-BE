@@ -1,5 +1,18 @@
 <?php
 class Order {
-    // TODO: Khai báo các thuộc tính (public/private properties) của bảng Order
+    public $id;
+    public $order_code;
+    public $customer_name;
+    public $customer_phone;
+    public $customer_email;
+    public $shipping_address;
+    public $status;           // PENDING | PROCESSING | COMPLETED | CANCELLED
+    public $total_amount;
+    public $discount_amount;
+    public $final_amount;
+    public $promotion_code;
+    public $note;
+    public $created_at;
+    public $updated_at;
 }
 ?>
