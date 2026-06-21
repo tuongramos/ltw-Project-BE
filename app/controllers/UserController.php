@@ -1,5 +1,7 @@
 <?php
+
 class UserController extends BaseController {
+
     private $service;
 
     public function __construct() {
@@ -7,13 +9,17 @@ class UserController extends BaseController {
     }
 
     public function index() {
-        // TODO: Xử lý request GET lấy danh sách
-        $this->jsonResponse(['message' => 'Lấy danh sách User thành công']);
+
+        $users = $this->service->getAll();
+
+        $this->jsonResponse($users);
     }
 
     public function show($id) {
-        // TODO: Xử lý request GET lấy 1 phần tử theo ID
-        $this->jsonResponse(['message' => "Lấy thông tin User ID $id thành công"]);
+
+    $user = $this->service->getById($id);
+
+    $this->jsonResponse($user);
     }
 
     public function store() {
