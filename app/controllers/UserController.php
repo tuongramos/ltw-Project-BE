@@ -23,8 +23,20 @@ class UserController extends BaseController {
     }
 
     public function store() {
-        // TODO: Xử lý request POST thêm mới
-        $this->jsonResponse(['message' => 'Thêm mới User thành công'], 201);
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $result = $this->service->create($data);
+
+    if ($result) {
+        $this->jsonResponse([
+            'message' => 'Tạo User thành công'
+        ], 201);
+    } else {
+        $this->jsonResponse([
+            'message' => 'Tạo User thất bại'
+        ], 400);
+    }
     }
 
     public function update($id) {

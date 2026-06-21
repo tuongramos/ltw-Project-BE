@@ -11,8 +11,19 @@ class UserService {
     public function getAll() {
         return $this->repository->findAll();
     }
+
     public function getById($id) {
-    return $this->repository->findById($id);
+        return $this->repository->findById($id);
+    }
+
+    public function create($data) {
+
+        return $this->repository->create(
+            $data['account_id'],
+            $data['full_name'],
+            $data['phone'],
+            $data['address']
+        );
     }
 }
 ?>
