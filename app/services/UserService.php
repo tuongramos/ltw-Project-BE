@@ -33,6 +33,10 @@ class UserService {
         $data['phone'],
         $data['address']
     );
+    }
+    public function delete($id) {
+
+    return $this->repository->delete($id);
 }
 }
 ?>
