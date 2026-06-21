@@ -40,9 +40,21 @@ class UserController extends BaseController {
     }
 
     public function update($id) {
-        // TODO: Xử lý request PUT cập nhật
-        $this->jsonResponse(['message' => "Cập nhật User ID $id thành công"]);
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $result = $this->service->update($id, $data);
+
+    if ($result) {
+        $this->jsonResponse([
+            'message' => 'Cập nhật User thành công'
+        ]);
+    } else {
+        $this->jsonResponse([
+            'message' => 'Cập nhật User thất bại'
+        ], 400);
     }
+}
 
     public function destroy($id) {
         // TODO: Xử lý request DELETE xóa

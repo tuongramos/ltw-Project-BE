@@ -35,5 +35,20 @@ class UserRepository {
             $address
         ]);
     }
+    public function update($id, $full_name, $phone, $address) {
+
+    $stmt = $this->db->prepare(
+        "UPDATE users
+         SET full_name = ?, phone = ?, address = ?
+         WHERE id = ?"
+    );
+
+    return $stmt->execute([
+        $full_name,
+        $phone,
+        $address,
+        $id
+    ]);
+    }
 }
 ?>

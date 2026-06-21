@@ -25,5 +25,14 @@ class UserService {
             $data['address']
         );
     }
+    public function update($id, $data) {
+
+    return $this->repository->update(
+        $id,
+        $data['full_name'],
+        $data['phone'],
+        $data['address']
+    );
+}
 }
 ?>
