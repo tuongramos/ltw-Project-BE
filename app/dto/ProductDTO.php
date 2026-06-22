@@ -5,12 +5,10 @@ class ProductDTO {
     public $category_id;
     public $category_name;  // Lấy từ JOIN với bảng categories
     public $name;
-    public $brand;
     public $description;
     public $price;
-    public $sale_price;
-    public $discount;
-    public $image;
-    public $stock;
+    public $image_url;
+    public $status;
+    public $created_at;
 }
 ?>

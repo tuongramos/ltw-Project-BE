@@ -7,78 +7,58 @@ class CategoryRepository {
         $this->db = $database->getConnection();
     }
 
-    /**
-     * Lấy tất cả danh mục
-     * @return array - Mảng các dòng dữ liệu từ bảng categories
-     */
     public function findAll() {
-        $query = "SELECT * FROM categories ORDER BY id ASC";
+        $query = "SELECT * FROM categories WHERE (is_deleted = 0 OR is_deleted IS NULL) ORDER BY id ASC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Tìm danh mục theo ID
-     * @param int $id - ID của danh mục
-     * @return array|false - Dữ liệu danh mục hoặc false nếu không tìm thấy
-     */
     public function findById($id) {
-        $query = "SELECT * FROM categories WHERE id = :id";
+        $query = "SELECT * FROM categories WHERE id = :id AND (is_deleted = 0 OR is_deleted IS NULL)";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Tạo mới danh mục
-     * @param array $data - Dữ liệu danh mục (name, slug, description)
-     * @return array|false - Dữ liệu danh mục vừa tạo hoặc false nếu thất bại
-     */
     public function create($data) {
-        $query = "INSERT INTO categories (name, slug, description) VALUES (:name, :slug, :description)";
+        $query = "INSERT INTO categories (name, description, image_url, status, is_deleted) 
+                  VALUES (:name, :description, :image_url, :status, 0)";
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':slug', $data['slug']);
-        $stmt->bindParam(':description', $data['description']);
-        $stmt->execute();
-
-        // Trả về dữ liệu danh mục vừa tạo
-        $lastId = $this->db->lastInsertId();
-        return $this->findById($lastId);
+        $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':image_url', $data['image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_STR);
+        
+        if ($stmt->execute()) {
+            return $this->db->lastInsertId();
+        }
+        return false;
     }
 
-    /**
-     * Cập nhật danh mục theo ID
-     * @param int $id - ID của danh mục cần cập nhật
-     * @param array $data - Dữ liệu cập nhật (name, slug, description)
-     * @return array|false - Dữ liệu danh mục sau khi cập nhật hoặc false
-     */
     public function update($id, $data) {
-        $query = "UPDATE categories SET name = :name, slug = :slug, description = :description WHERE id = :id";
+        $query = "UPDATE categories 
+                  SET name = :name, 
+                      description = :description, 
+                      image_url = :image_url, 
+                      status = :status 
+                  WHERE id = :id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':slug', $data['slug']);
-        $stmt->bindParam(':description', $data['description']);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        // Trả về dữ liệu danh mục sau khi cập nhật
-        return $this->findById($id);
+        $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':image_url', $data['image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_STR);
+        
+        return $stmt->execute();
     }
 
-    /**
-     * Xóa danh mục theo ID
-     * @param int $id - ID của danh mục cần xóa
-     * @return bool - true nếu xóa thành công
-     */
     public function delete($id) {
-        $query = "DELETE FROM categories WHERE id = :id";
+        $query = "UPDATE categories SET is_deleted = 1 WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
+        return $stmt->execute();
     }
 }
 ?>

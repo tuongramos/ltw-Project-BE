@@ -7,28 +7,131 @@ class PromotionController extends BaseController {
     }
 
     public function index() {
-        // TODO: Xử lý request GET lấy danh sách
-        $this->jsonResponse(['message' => 'Lấy danh sách Promotion thành công']);
+        try {
+            $promotions = $this->service->getAll();
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $promotions,
+                'message' => 'Lấy danh sách khuyến mãi thành công'
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi lấy danh sách khuyến mãi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id) {
-        // TODO: Xử lý request GET lấy 1 phần tử theo ID
-        $this->jsonResponse(['message' => "Lấy thông tin Promotion ID $id thành công"]);
+        try {
+            $promotion = $this->service->getById($id);
+            if (!$promotion) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy khuyến mãi với ID $id"
+                ], 404);
+            }
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $promotion,
+                'message' => 'Lấy thông tin khuyến mãi thành công'
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi lấy thông tin khuyến mãi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store() {
-        // TODO: Xử lý request POST thêm mới
-        $this->jsonResponse(['message' => 'Thêm mới Promotion thành công'], 201);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (empty($data)) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Dữ liệu gửi lên không hợp lệ'
+                ], 400);
+            }
+
+            $promotion = $this->service->create($data);
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $promotion,
+                'message' => 'Tạo khuyến mãi thành công'
+            ], 201);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi tạo khuyến mãi: ' . $e->getMessage()
+            ], 400);
+        }
     }
 
     public function update($id) {
-        // TODO: Xử lý request PUT cập nhật
-        $this->jsonResponse(['message' => "Cập nhật Promotion ID $id thành công"]);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (empty($data)) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Dữ liệu gửi lên không hợp lệ'
+                ], 400);
+            }
+
+            $promotion = $this->service->update($id, $data);
+            if (!$promotion) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy khuyến mãi với ID $id"
+                ], 404);
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $promotion,
+                'message' => "Cập nhật khuyến mãi ID $id thành công"
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi cập nhật khuyến mãi: ' . $e->getMessage()
+            ], 400);
+        }
     }
 
     public function destroy($id) {
-        // TODO: Xử lý request DELETE xóa
-        $this->jsonResponse(['message' => "Xóa Promotion ID $id thành công"]);
+        try {
+            $result = $this->service->delete($id);
+            if (!$result) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy khuyến mãi với ID $id"
+                ], 404);
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => null,
+                'message' => "Xóa khuyến mãi ID $id thành công"
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi xóa khuyến mãi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 ?>

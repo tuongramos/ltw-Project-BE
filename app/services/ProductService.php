@@ -73,15 +73,9 @@ class ProductService {
         }
 
         // Gán giá trị mặc định cho các trường không bắt buộc
-        $data['brand'] = $data['brand'] ?? null;
         $data['description'] = $data['description'] ?? null;
-        $data['sale_price'] = $data['sale_price'] ?? null;
-        $data['image'] = $data['image'] ?? null;
-        $data['stock'] = $data['stock'] ?? 0;
-        $data['status'] = $data['status'] ?? 1;
-
-        // Tự động tính discount nếu có sale_price
-        $data['discount'] = $this->calculateDiscount($data['price'], $data['sale_price']);
+        $data['image_url'] = $data['image_url'] ?? null;
+        $data['status'] = $data['status'] ?? 'active';
 
         $id = $this->repository->create($data);
         if ($id) {
@@ -116,15 +110,9 @@ class ProductService {
         }
 
         // Gán giá trị mặc định cho các trường không bắt buộc
-        $data['brand'] = $data['brand'] ?? $existing['brand'];
         $data['description'] = $data['description'] ?? $existing['description'];
-        $data['sale_price'] = $data['sale_price'] ?? $existing['sale_price'];
-        $data['image'] = $data['image'] ?? $existing['image'];
-        $data['stock'] = $data['stock'] ?? $existing['stock'];
+        $data['image_url'] = $data['image_url'] ?? $existing['image_url'];
         $data['status'] = $data['status'] ?? $existing['status'];
-
-        // Tự động tính discount nếu có sale_price
-        $data['discount'] = $this->calculateDiscount($data['price'], $data['sale_price']);
 
         $result = $this->repository->update($id, $data);
         if ($result) {
@@ -152,18 +140,6 @@ class ProductService {
         return ['success' => false, 'message' => 'Xóa sản phẩm thất bại'];
     }
 
-    /**
-     * Tự động tính phần trăm giảm giá
-     * Công thức: discount = round((price - sale_price) / price * 100)
-     * @param float $price
-     * @param float|null $salePrice
-     * @return int
-     */
-    private function calculateDiscount($price, $salePrice) {
-        if ($salePrice && $price > 0 && $salePrice < $price) {
-            return round(($price - $salePrice) / $price * 100);
-        }
-        return 0;
-    }
+
 }
 ?>

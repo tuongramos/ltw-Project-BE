@@ -8,52 +8,67 @@ class PaymentRepository {
     }
 
     public function findAll() {
-        $stmt = $this->db->prepare("SELECT * FROM payments ORDER BY created_at DESC");
+        $stmt = $this->db->prepare("SELECT * FROM payments WHERE (is_deleted = 0 OR is_deleted IS NULL) ORDER BY id DESC");
         $stmt->execute();
-      return $stmt->fetchAll(PDO::FETCH_CLASS, Payment::class);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM payments WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetchObject(Payment::class);
+        $stmt = $this->db->prepare("SELECT * FROM payments WHERE id = :id AND (is_deleted = 0 OR is_deleted IS NULL)");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function findByOrderId($orderId) {
-        $stmt = $this->db->prepare("SELECT * FROM payments WHERE order_id = ?");
-        $stmt->execute([$orderId]);
-        return $stmt->fetchObject(Payment::class);
+        $stmt = $this->db->prepare("SELECT * FROM payments WHERE order_id = :order_id AND (is_deleted = 0 OR is_deleted IS NULL)");
+        $stmt->bindParam(':order_id', $orderId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function create($data) {
         $stmt = $this->db->prepare("
-            INSERT INTO payments (order_id, method, amount, status, transaction_id, created_at)
-            VALUES (?, ?, ?, ?, ?, NOW())
+            INSERT INTO payments (amount, payment_method, payment_date, status, transaction_id, order_id, is_deleted)
+            VALUES (:amount, :payment_method, :payment_date, :status, :transaction_id, :order_id, 0)
         ");
-        $stmt->execute([
-            $data['order_id'],
-            $data['method'] ?? 'COD',
-            $data['amount'],
-            $data['status'] ?? 'PENDING',
-            $data['transaction_id'] ?? null,
-        ]);
-        return $this->findById($this->db->lastInsertId());
+        $stmt->bindParam(':amount',         $data['amount']);
+        $stmt->bindParam(':payment_method', $data['payment_method']);
+        $stmt->bindParam(':payment_date',   $data['payment_date']);
+        $stmt->bindParam(':status',         $data['status']);
+        $stmt->bindParam(':transaction_id', $data['transaction_id']);
+        $stmt->bindParam(':order_id',       $data['order_id']);
+        $stmt->execute();
+
+        $lastId = $this->db->lastInsertId();
+        return $this->findById($lastId);
     }
 
     public function update($id, $data) {
-        $stmt = $this->db->prepare("
-            UPDATE payments SET method = ?, amount = ?, status = ?, transaction_id = ? WHERE id = ?
-        ");
-        $stmt->execute([
-            $data['method'], $data['amount'], $data['status'],
-            $data['transaction_id'] ?? null, $id
-        ]);
+        $fields = [];
+        $values = [];
+        $allowedColumns = ['amount', 'payment_method', 'payment_date', 'status', 'transaction_id', 'order_id', 'is_deleted'];
+
+        foreach ($allowedColumns as $col) {
+            if (array_key_exists($col, $data)) {
+                $fields[] = "$col = :$col";
+                $values[":$col"] = $data[$col];
+            }
+        }
+        if (empty($fields)) return $this->findById($id);
+
+        $values[':id'] = $id;
+        $stmt = $this->db->prepare("UPDATE payments SET " . implode(', ', $fields) . " WHERE id = :id");
+        $stmt->execute($values);
         return $this->findById($id);
     }
 
     public function delete($id) {
-        $stmt = $this->db->prepare("DELETE FROM payments WHERE id = ?");
-        return $stmt->execute([$id]);
+        // Soft delete
+        $stmt = $this->db->prepare("UPDATE payments SET is_deleted = 1 WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 }
 ?>

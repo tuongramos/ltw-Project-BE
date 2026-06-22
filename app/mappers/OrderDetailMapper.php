@@ -1,20 +1,28 @@
 <?php
 class OrderDetailMapper {
-    public static function toDTO($model) {
+    /**
+     * Chuyển đổi từ dữ liệu DB (mảng) sang DTO
+     * @param array $row - Dữ liệu từ database
+     * @return OrderDetailDTO
+     */
+    public static function toDTO($row) {
         $dto = new OrderDetailDTO();
-        $dto->id            = $model->id;
-        $dto->order_id      = $model->order_id;
-        $dto->product_id    = $model->product_id;
-        $dto->product_name  = $model->product_name;
-        $dto->product_image = $model->product_image;
-        $dto->quantity      = $model->quantity;
-        $dto->unit_price    = $model->unit_price;
-        $dto->subtotal      = $model->subtotal;
+        $dto->id                 = $row['id'] ?? null;
+        $dto->order_id           = $row['order_id'] ?? null;
+        $dto->product_variant_id = $row['product_variant_id'] ?? null;
+        $dto->quantity           = $row['quantity'] ?? null;
+        $dto->unit_price         = $row['unit_price'] ?? null;
+        $dto->is_deleted         = $row['is_deleted'] ?? 0;
         return $dto;
     }
 
-    public static function toDTOList($models) {
-        return array_map([self::class, 'toDTO'], $models);
+    /**
+     * Chuyển đổi từ dữ liệu DB (mảng) sang Model
+     * @param array $row - Dữ liệu từ database
+     * @return OrderDetail
+     */
+    public static function toModel($row) {
+        return new OrderDetail($row);
     }
 }
 ?>

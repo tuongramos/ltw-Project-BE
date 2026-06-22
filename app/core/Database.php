@@ -5,8 +5,12 @@ class Database {
     public function __construct() {
         $config = require __DIR__ . '/../../config/dbConf.php';
         try {
-            $dsn = "mysql:host=" . $config['host'] . ";dbname=" . $config['db_name'];
-            $this->conn = new PDO($dsn, $config['username'], $config['password']);
+            $portStr = isset($config['port']) ? ";port=" . $config['port'] : "";
+            $dsn = "mysql:host=" . $config['host'] . $portStr . ";dbname=" . $config['db_name'];
+            $options = array(
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+            );
+            $this->conn = new PDO($dsn, $config['username'], $config['password'], $options);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->exec("set names utf8mb4");
         } catch(PDOException $e) {

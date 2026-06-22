@@ -8,51 +8,65 @@ class OrderDetailRepository {
     }
 
     public function findAll() {
-        $stmt = $this->db->prepare("SELECT * FROM order_details");
+        $stmt = $this->db->prepare("SELECT * FROM order_details WHERE (is_deleted = 0 OR is_deleted IS NULL) ORDER BY id DESC");
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_CLASS, 'OrderDetail');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM order_details WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetchObject('OrderDetail');
+        $stmt = $this->db->prepare("SELECT * FROM order_details WHERE id = :id AND (is_deleted = 0 OR is_deleted IS NULL)");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function findByOrderId($orderId) {
-        $stmt = $this->db->prepare("SELECT * FROM order_details WHERE order_id = ?");
-        $stmt->execute([$orderId]);
-        return $stmt->fetchAll(PDO::FETCH_CLASS, 'OrderDetail');
+        $stmt = $this->db->prepare("SELECT * FROM order_details WHERE order_id = :order_id AND (is_deleted = 0 OR is_deleted IS NULL)");
+        $stmt->bindParam(':order_id', $orderId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create($data) {
         $stmt = $this->db->prepare("
-            INSERT INTO order_details (order_id, product_id, product_name, product_image, quantity, unit_price, subtotal)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO order_details (order_id, product_variant_id, quantity, unit_price, is_deleted)
+            VALUES (:order_id, :product_variant_id, :quantity, :unit_price, 0)
         ");
-        $stmt->execute([
-            $data['order_id'],
-            $data['product_id'],
-            $data['product_name'],
-            $data['product_image'] ?? null,
-            $data['quantity'],
-            $data['unit_price'],
-            $data['subtotal'],
-        ]);
-        return $this->findById($this->db->lastInsertId());
+        $stmt->bindParam(':order_id',           $data['order_id']);
+        $stmt->bindParam(':product_variant_id', $data['product_variant_id']);
+        $stmt->bindParam(':quantity',           $data['quantity']);
+        $stmt->bindParam(':unit_price',         $data['unit_price']);
+        $stmt->execute();
+
+        $lastId = $this->db->lastInsertId();
+        return $this->findById($lastId);
     }
 
     public function update($id, $data) {
-        $stmt = $this->db->prepare("
-            UPDATE order_details SET quantity = ?, unit_price = ?, subtotal = ? WHERE id = ?
-        ");
-        $stmt->execute([$data['quantity'], $data['unit_price'], $data['subtotal'], $id]);
+        $fields = [];
+        $values = [];
+        $allowedColumns = ['order_id', 'product_variant_id', 'quantity', 'unit_price', 'is_deleted'];
+
+        foreach ($allowedColumns as $col) {
+            if (array_key_exists($col, $data)) {
+                $fields[] = "$col = :$col";
+                $values[":$col"] = $data[$col];
+            }
+        }
+        if (empty($fields)) return $this->findById($id);
+
+        $values[':id'] = $id;
+        $stmt = $this->db->prepare("UPDATE order_details SET " . implode(', ', $fields) . " WHERE id = :id");
+        $stmt->execute($values);
         return $this->findById($id);
     }
 
     public function delete($id) {
-        $stmt = $this->db->prepare("DELETE FROM order_details WHERE id = ?");
-        return $stmt->execute([$id]);
+        // Soft delete
+        $stmt = $this->db->prepare("UPDATE order_details SET is_deleted = 1 WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
 }
 ?>

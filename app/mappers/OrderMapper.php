@@ -1,25 +1,32 @@
 <?php
 class OrderMapper {
-    public static function toDTO($model) {
+
+    /**
+     * Chuyển đổi từ dữ liệu DB (mảng) sang DTO
+     * @param array $row - Dữ liệu từ database
+     * @return OrderDTO
+     */
+    public static function toDTO($row) {
         $dto = new OrderDTO();
-        $dto->id              = $model->id;
-        $dto->order_code      = $model->order_code;
-        $dto->customer_name   = $model->customer_name;
-        $dto->customer_phone  = $model->customer_phone;
-        $dto->customer_email  = $model->customer_email;
-        $dto->shipping_address = $model->shipping_address;
-        $dto->status          = $model->status;
-        $dto->total_amount    = $model->total_amount;
-        $dto->discount_amount = $model->discount_amount;
-        $dto->final_amount    = $model->final_amount;
-        $dto->promotion_code  = $model->promotion_code;
-        $dto->note            = $model->note;
-        $dto->created_at      = $model->created_at;
+        $dto->id           = $row['id'] ?? null;
+        $dto->order_date   = $row['order_date'] ?? null;
+        $dto->total_amount = $row['total_amount'] ?? null;
+        $dto->final_amount = $row['final_amount'] ?? null;
+        $dto->shipping_address = $row['shipping_address'] ?? null;
+        $dto->status       = $row['status'] ?? null;
+        $dto->user_id      = $row['user_id'] ?? null;
+        $dto->promotion_id = $row['promotion_id'] ?? null;
+        $dto->is_deleted   = $row['is_deleted'] ?? 0;
         return $dto;
     }
 
-    public static function toDTOList($models) {
-        return array_map([self::class, 'toDTO'], $models);
+    /**
+     * Chuyển đổi từ dữ liệu DB (mảng) sang Model
+     * @param array $row - Dữ liệu từ database
+     * @return Order
+     */
+    public static function toModel($row) {
+        return new Order($row);
     }
 }
 ?>

@@ -11,13 +11,11 @@ class ProductMapper {
         $dto->category_id = $row['category_id'] ?? null;
         $dto->category_name = $row['category_name'] ?? null; // Từ JOIN với bảng categories
         $dto->name = $row['name'] ?? null;
-        $dto->brand = $row['brand'] ?? null;
         $dto->description = $row['description'] ?? null;
         $dto->price = $row['price'] ?? null;
-        $dto->sale_price = $row['sale_price'] ?? null;
-        $dto->discount = $row['discount'] ?? 0;
-        $dto->image = $row['image'] ?? null;
-        $dto->stock = $row['stock'] ?? 0;
+        $dto->image_url = $row['image_url'] ?? null;
+        $dto->status = $row['status'] ?? null;
+        $dto->created_at = $row['created_at'] ?? null;
         return $dto;
     }
 }

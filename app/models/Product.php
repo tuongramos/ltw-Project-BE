@@ -4,18 +4,31 @@ class Product {
     private $id;
     private $category_id;
     private $name;
-    private $brand;
     private $description;
     private $price;
-    private $sale_price;
-    private $discount;
-    private $image;
-    private $stock;
+    private $image_url;
     private $status;
+    private $is_deleted;
     private $created_at;
     private $updated_at;
 
-    // ==================== GETTERS ====================
+    // Constructor - có thể khởi tạo từ mảng dữ liệu
+    public function __construct($data = []) {
+        if (!empty($data)) {
+            $this->id = $data['id'] ?? null;
+            $this->category_id = $data['category_id'] ?? null;
+            $this->name = $data['name'] ?? null;
+            $this->description = $data['description'] ?? null;
+            $this->price = $data['price'] ?? null;
+            $this->image_url = $data['image_url'] ?? null;
+            $this->status = $data['status'] ?? null;
+            $this->is_deleted = $data['is_deleted'] ?? null;
+            $this->created_at = $data['created_at'] ?? null;
+            $this->updated_at = $data['updated_at'] ?? null;
+        }
+    }
+
+    //Getters
 
     public function getId() {
         return $this->id;
@@ -29,10 +42,6 @@ class Product {
         return $this->name;
     }
 
-    public function getBrand() {
-        return $this->brand;
-    }
-
     public function getDescription() {
         return $this->description;
     }
@@ -41,24 +50,16 @@ class Product {
         return $this->price;
     }
 
-    public function getSalePrice() {
-        return $this->sale_price;
-    }
-
-    public function getDiscount() {
-        return $this->discount;
-    }
-
-    public function getImage() {
-        return $this->image;
-    }
-
-    public function getStock() {
-        return $this->stock;
+    public function getImageUrl() {
+        return $this->image_url;
     }
 
     public function getStatus() {
         return $this->status;
+    }
+
+    public function getIsDeleted() {
+        return $this->is_deleted;
     }
 
     public function getCreatedAt() {
@@ -69,7 +70,7 @@ class Product {
         return $this->updated_at;
     }
 
-    // ==================== SETTERS ====================
+    //Setters
 
     public function setId($id) {
         $this->id = $id;
@@ -83,10 +84,6 @@ class Product {
         $this->name = $name;
     }
 
-    public function setBrand($brand) {
-        $this->brand = $brand;
-    }
-
     public function setDescription($description) {
         $this->description = $description;
     }
@@ -95,24 +92,16 @@ class Product {
         $this->price = $price;
     }
 
-    public function setSalePrice($sale_price) {
-        $this->sale_price = $sale_price;
-    }
-
-    public function setDiscount($discount) {
-        $this->discount = $discount;
-    }
-
-    public function setImage($image) {
-        $this->image = $image;
-    }
-
-    public function setStock($stock) {
-        $this->stock = $stock;
+    public function setImageUrl($image_url) {
+        $this->image_url = $image_url;
     }
 
     public function setStatus($status) {
         $this->status = $status;
+    }
+
+    public function setIsDeleted($is_deleted) {
+        $this->is_deleted = $is_deleted;
     }
 
     public function setCreatedAt($created_at) {

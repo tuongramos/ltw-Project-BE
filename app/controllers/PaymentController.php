@@ -6,29 +6,152 @@ class PaymentController extends BaseController {
         $this->service = new PaymentService();
     }
 
+    /**
+     * GET /api/payments
+     * Lấy danh sách tất cả thanh toán
+     */
     public function index() {
-        // TODO: Xử lý request GET lấy danh sách
-        $this->jsonResponse(['message' => 'Lấy danh sách Payment thành công']);
+        try {
+            $payments = $this->service->getAll();
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $payments,
+                'message' => 'Lấy danh sách thanh toán thành công'
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi lấy danh sách thanh toán: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * GET /api/payments/{id}
+     * Lấy thông tin thanh toán theo ID
+     */
     public function show($id) {
-        // TODO: Xử lý request GET lấy 1 phần tử theo ID
-        $this->jsonResponse(['message' => "Lấy thông tin Payment ID $id thành công"]);
+        try {
+            $payment = $this->service->getById($id);
+            if (!$payment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy thanh toán với ID $id"
+                ], 404);
+            }
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $payment,
+                'message' => 'Lấy thông tin thanh toán thành công'
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi lấy thông tin thanh toán: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * POST /api/payments
+     * Tạo mới thanh toán
+     */
     public function store() {
-        // TODO: Xử lý request POST thêm mới
-        $this->jsonResponse(['message' => 'Thêm mới Payment thành công'], 201);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (empty($data)) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Dữ liệu gửi lên không hợp lệ'
+                ], 400);
+            }
+
+            $payment = $this->service->create($data);
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $payment,
+                'message' => 'Tạo thanh toán thành công'
+            ], 201);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi tạo thanh toán: ' . $e->getMessage()
+            ], 400);
+        }
     }
 
+    /**
+     * PUT /api/payments/{id}
+     * Cập nhật thông tin thanh toán theo ID
+     */
     public function update($id) {
-        // TODO: Xử lý request PUT cập nhật
-        $this->jsonResponse(['message' => "Cập nhật Payment ID $id thành công"]);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (empty($data)) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Dữ liệu gửi lên không hợp lệ'
+                ], 400);
+            }
+
+            $payment = $this->service->update($id, $data);
+            if (!$payment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy thanh toán với ID $id"
+                ], 404);
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $payment,
+                'message' => "Cập nhật thanh toán ID $id thành công"
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi cập nhật thanh toán: ' . $e->getMessage()
+            ], 400);
+        }
     }
 
+    /**
+     * DELETE /api/payments/{id}
+     * Xóa thanh toán theo ID
+     */
     public function destroy($id) {
-        // TODO: Xử lý request DELETE xóa
-        $this->jsonResponse(['message' => "Xóa Payment ID $id thành công"]);
+        try {
+            $result = $this->service->delete($id);
+            if (!$result) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'data' => null,
+                    'message' => "Không tìm thấy thanh toán với ID $id"
+                ], 404);
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'data' => null,
+                'message' => "Xóa thanh toán ID $id thành công"
+            ]);
+        } catch (Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'data' => null,
+                'message' => 'Lỗi khi xóa thanh toán: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 ?>

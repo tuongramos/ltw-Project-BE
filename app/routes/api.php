@@ -5,17 +5,14 @@ $router->add('GET', '/', function() {
 });
 
 // ==========================================
-// KHO TÀI KHOẢN (Account)
+// KHO TÀI KHOẢN (Account) - Đã gộp vào User
 // ==========================================
-$router->add('GET', '/api/accounts', ['AccountController', 'index']);
-$router->add('GET', '/api/accounts/{id}', ['AccountController', 'show']);
-$router->add('POST', '/api/accounts', ['AccountController', 'store']);
-$router->add('PUT', '/api/accounts/{id}', ['AccountController', 'update']);
-$router->add('DELETE', '/api/accounts/{id}', ['AccountController', 'destroy']);
 
 // ==========================================
-// NGƯỜI DÙNG (User)
+// NGƯỜI DÙNG (User) & ĐĂNG NHẬP
 // ==========================================
+$router->add('POST', '/api/login', ['UserController', 'login']);
+
 $router->add('GET', '/api/users', ['UserController', 'index']);
 $router->add('GET', '/api/users/{id}', ['UserController', 'show']);
 $router->add('POST', '/api/users', ['UserController', 'store']);
@@ -39,6 +36,23 @@ $router->add('GET', '/api/products/{id}', ['ProductController', 'show']);
 $router->add('POST', '/api/products', ['ProductController', 'store']);
 $router->add('PUT', '/api/products/{id}', ['ProductController', 'update']);
 $router->add('DELETE', '/api/products/{id}', ['ProductController', 'destroy']);
+
+// ==========================================
+// BIẾN THỂ SẢN PHẨM (Product Variants)
+// ==========================================
+$router->add('GET', '/api/product_variants', ['ProductVariantController', 'index']);
+$router->add('GET', '/api/product_variants/product/{productId}', ['ProductVariantController', 'getByProductId']);
+$router->add('GET', '/api/product_variants/{id}', ['ProductVariantController', 'show']);
+$router->add('POST', '/api/product_variants', ['ProductVariantController', 'store']);
+$router->add('PUT', '/api/product_variants/{id}', ['ProductVariantController', 'update']);
+$router->add('DELETE', '/api/product_variants/{id}', ['ProductVariantController', 'destroy']);
+
+$router->add('GET', '/api/product-variants', ['ProductVariantController', 'index']);
+$router->add('GET', '/api/product-variants/product/{productId}', ['ProductVariantController', 'getByProductId']);
+$router->add('GET', '/api/product-variants/{id}', ['ProductVariantController', 'show']);
+$router->add('POST', '/api/product-variants', ['ProductVariantController', 'store']);
+$router->add('PUT', '/api/product-variants/{id}', ['ProductVariantController', 'update']);
+$router->add('DELETE', '/api/product-variants/{id}', ['ProductVariantController', 'destroy']);
 
 // ==========================================
 // KHUYẾN MÃI (Promotion)

@@ -1,17 +1,13 @@
 <?php
 class OrderDTO {
     public $id;
-    public $order_code;
-    public $customer_name;
-    public $customer_phone;
-    public $customer_email;
+    public $order_date;
+    public $total_amount;
+    public $final_amount;
     public $shipping_address;
     public $status;
-    public $total_amount;
-    public $discount_amount;
-    public $final_amount;
-    public $promotion_code;
-    public $note;
-    public $created_at;
+    public $user_id;
+    public $promotion_id;
+    public $is_deleted;
 }
 ?>

@@ -15,6 +15,7 @@ class ProductRepository {
         $query = "SELECT p.*, c.name AS category_name 
                   FROM products p 
                   LEFT JOIN categories c ON p.category_id = c.id 
+                  WHERE (p.is_deleted = 0 OR p.is_deleted IS NULL)
                   ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
@@ -30,7 +31,7 @@ class ProductRepository {
         $query = "SELECT p.*, c.name AS category_name 
                   FROM products p 
                   LEFT JOIN categories c ON p.category_id = c.id 
-                  WHERE p.id = :id";
+                  WHERE p.id = :id AND (p.is_deleted = 0 OR p.is_deleted IS NULL)";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -46,7 +47,7 @@ class ProductRepository {
         $query = "SELECT p.*, c.name AS category_name 
                   FROM products p 
                   LEFT JOIN categories c ON p.category_id = c.id 
-                  WHERE p.category_id = :category_id 
+                  WHERE p.category_id = :category_id AND (p.is_deleted = 0 OR p.is_deleted IS NULL)
                   ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
@@ -55,7 +56,7 @@ class ProductRepository {
     }
 
     /**
-     * Tìm kiếm sản phẩm theo tên hoặc thương hiệu
+     * Tìm kiếm sản phẩm theo tên
      * @param string $keyword
      * @return array
      */
@@ -63,12 +64,11 @@ class ProductRepository {
         $query = "SELECT p.*, c.name AS category_name 
                   FROM products p 
                   LEFT JOIN categories c ON p.category_id = c.id 
-                  WHERE p.name LIKE :keyword OR p.brand LIKE :keyword2 
+                  WHERE (p.name LIKE :keyword OR p.description LIKE :keyword) AND (p.is_deleted = 0 OR p.is_deleted IS NULL)
                   ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($query);
         $searchTerm = '%' . $keyword . '%';
         $stmt->bindParam(':keyword', $searchTerm, PDO::PARAM_STR);
-        $stmt->bindParam(':keyword2', $searchTerm, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -79,20 +79,16 @@ class ProductRepository {
      * @return bool
      */
     public function create($data) {
-        $query = "INSERT INTO products (category_id, name, brand, description, price, sale_price, discount, image, stock, status) 
-                  VALUES (:category_id, :name, :brand, :description, :price, :sale_price, :discount, :image, :stock, :status)";
+        $query = "INSERT INTO products (category_id, name, description, price, image_url, status, is_deleted) 
+                  VALUES (:category_id, :name, :description, :price, :image_url, :status, 0)";
         $stmt = $this->db->prepare($query);
 
         $stmt->bindParam(':category_id', $data['category_id'], PDO::PARAM_INT);
         $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-        $stmt->bindParam(':brand', $data['brand'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
         $stmt->bindParam(':price', $data['price'], PDO::PARAM_STR);
-        $stmt->bindParam(':sale_price', $data['sale_price'], PDO::PARAM_STR);
-        $stmt->bindParam(':discount', $data['discount'], PDO::PARAM_INT);
-        $stmt->bindParam(':image', $data['image'], PDO::PARAM_STR);
-        $stmt->bindParam(':stock', $data['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':status', $data['status'], PDO::PARAM_INT);
+        $stmt->bindParam(':image_url', $data['image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             return $this->db->lastInsertId();
@@ -110,13 +106,9 @@ class ProductRepository {
         $query = "UPDATE products 
                   SET category_id = :category_id, 
                       name = :name, 
-                      brand = :brand, 
                       description = :description, 
                       price = :price, 
-                      sale_price = :sale_price, 
-                      discount = :discount, 
-                      image = :image, 
-                      stock = :stock, 
+                      image_url = :image_url, 
                       status = :status 
                   WHERE id = :id";
         $stmt = $this->db->prepare($query);
@@ -124,14 +116,10 @@ class ProductRepository {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->bindParam(':category_id', $data['category_id'], PDO::PARAM_INT);
         $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-        $stmt->bindParam(':brand', $data['brand'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
         $stmt->bindParam(':price', $data['price'], PDO::PARAM_STR);
-        $stmt->bindParam(':sale_price', $data['sale_price'], PDO::PARAM_STR);
-        $stmt->bindParam(':discount', $data['discount'], PDO::PARAM_INT);
-        $stmt->bindParam(':image', $data['image'], PDO::PARAM_STR);
-        $stmt->bindParam(':stock', $data['stock'], PDO::PARAM_INT);
-        $stmt->bindParam(':status', $data['status'], PDO::PARAM_INT);
+        $stmt->bindParam(':image_url', $data['image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_STR);
 
         return $stmt->execute();
     }
@@ -142,7 +130,7 @@ class ProductRepository {
      * @return bool
      */
     public function delete($id) {
-        $query = "DELETE FROM products WHERE id = :id";
+        $query = "UPDATE products SET is_deleted = 1 WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
@@ -153,7 +141,7 @@ class ProductRepository {
      * @return int
      */
     public function countAll() {
-        $query = "SELECT COUNT(*) as total FROM products";
+        $query = "SELECT COUNT(*) as total FROM products WHERE (is_deleted = 0 OR is_deleted IS NULL)";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
